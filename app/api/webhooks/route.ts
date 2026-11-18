@@ -3,6 +3,7 @@ import { stripe } from '@/utils/stripe/config';
 import {
   upsertProductRecord,
   upsertPriceRecord,
+  syncPriceRecord,
   manageSubscriptionStatusChange,
   deleteProductRecord,
   deletePriceRecord
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
           break;
         case 'price.created':
         case 'price.updated':
-          await upsertPriceRecord(event.data.object as Stripe.Price);
+          await syncPriceRecord(event.data.object as Stripe.Price);
           break;
         case 'price.deleted':
           await deletePriceRecord(event.data.object as Stripe.Price);

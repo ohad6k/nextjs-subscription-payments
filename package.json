@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "build": "next build",
+    "test:race": "npx -y viberaven@1.10.0 race . --spec supabase/race/catalog.race.json --migrations supabase/migrations --bootstrap supabase/race/bootstrap.sql",
     "start": "next start",
     "lint": "next lint",
     "prettier-fix": "prettier --write .",

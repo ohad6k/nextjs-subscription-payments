@@ -73,6 +73,22 @@ const upsertPriceRecord = async (
   }
 };
 
+// Webhook events can arrive out of order (price.updated after price.deleted).
+// Re-read the price from Stripe: if it no longer exists, remove the local row
+// instead of upserting the stale payload back in.
+const syncPriceRecord = async (price: Stripe.Price) => {
+  try {
+    const current = await stripe.prices.retrieve(price.id);
+    await upsertPriceRecord(current);
+  } catch (error: any) {
+    if (error?.code === 'resource_missing') {
+      await deletePriceRecord(price);
+    } else {
+      throw error;
+    }
+  }
+};
+
 const deleteProductRecord = async (product: Stripe.Product) => {
   const { error: deletionError } = await supabaseAdmin
     .from('products')
@@ -285,6 +301,7 @@ const manageSubscriptionStatusChange = async (
 export {
   upsertProductRecord,
   upsertPriceRecord,
+  syncPriceRecord,
   deleteProductRecord,
   deletePriceRecord,
   createOrRetrieveCustomer,

@@ -1,0 +1,21 @@
+{
+  "rule": "A stale price.updated delivered around price.deleted must not bring the price back",
+  "setup": "INSERT INTO products(id,active,name) VALUES ('prod_1',true,'Pro'); INSERT INTO prices(id,product_id,active,unit_amount,currency) VALUES ('price_1','prod_1',true,1000,'usd')",
+  "invariant": "SELECT (SELECT count(*) FROM prices WHERE id='price_1' AND active=false) = 0",
+  "isolation": [
+    "read committed"
+  ],
+  "notes": "SQL transliteration of the webhook handler; covers bounded SQL orders only, not HTTP or Stripe.",
+  "requests": [
+    {
+      "statements": [
+        "DELETE FROM prices WHERE id='price_1'"
+      ]
+    },
+    {
+      "statements": [
+        "DELETE FROM prices WHERE id='price_1'"
+      ]
+    }
+  ]
+}
