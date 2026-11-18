@@ -244,6 +244,10 @@ Note that webhook forwarding and the development server must be running concurre
 
 Finally, navigate to [http://localhost:3000](http://localhost:3000) in your browser to see the application rendered.
 
+### Webhook concurrency test
+
+Stripe can deliver webhook events late, twice, or out of order. `pnpm test:race` runs the Stripe webhook's database writes in every possible order on a real Postgres with [VibeRaven](https://viberaven.dev) (`npx -y viberaven race`), and fails if any order breaks the rule in `supabase/race/catalog.race.json`. It also runs in `npm test`. Add a rule there when you add a webhook handler.
+
 ## Going live
 
 ### Archive testing products
